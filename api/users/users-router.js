@@ -60,9 +60,21 @@ router.put('/:id', md.validateUserId, md.validateUser, (req, res) => {
     });
 });
 
-router.delete('/:id', (req, res) => {
+router.delete('/:id', md.validateUserId, async (req, res) => {
   // RETURN THE FRESHLY DELETED USER OBJECT
   // this needs a middleware to verify user id
+  const deletedUser = await Users.getById(req.params.id)
+  Users.remove(req.params.id)
+    .then(user => {//eslint-disable-line
+      res.json(deletedUser);
+    })
+    .catch(err => {
+      res.status(500).json({
+        message: 'error deleting user',
+        err: err.message,
+        stack: err.stack,
+      });
+    });
 });
 
 router.get('/:id/posts', (req, res) => {
