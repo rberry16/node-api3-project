@@ -32,6 +32,7 @@ function validatePost(req, res, next) {
   } else {
     next();
   }
+  console.log(req.body);
 }
 
 // do not forget to expose these functions to other modules

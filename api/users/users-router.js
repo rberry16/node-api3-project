@@ -77,26 +77,30 @@ router.delete('/:id', md.validateUserId, async (req, res) => {
     });
 });
 
-router.get('/:id/posts', (req, res) => {
+router.get('/:id/posts', md.validateUserId, (req, res) => {
   // RETURN THE ARRAY OF USER POSTS
   // this needs a middleware to verify user id
-});
-
-router.post('/:id/posts', (req, res) => {
-  // RETURN THE NEWLY CREATED USER POST
-  // this needs a middleware to verify user id
-  // and another middleware to check that the request body is valid
-  Posts.insert(req.body)
-    .then(post => {
-      res.status(201).json(post);
+  Users.getUserPosts(req.params.id)
+    .then(posts => {
+      res.json(posts);
     })
     .catch(err => {
       res.status(500).json({
-        message: 'error creating new post',
+        message: `error retrieving posts for user id: ${req.params.id}`,
         err: err.message,
         stack: err.stack,
       });
     });
+});
+
+router.post('/:id/posts', md.validateUserId, md.validatePost, (req, res) => {
+  // RETURN THE NEWLY CREATED USER POST
+  // this needs a middleware to verify user id
+  // and another middleware to check that the request body is valid
+  Posts.insert({user_id: req.params.id, text: req.body.text})
+    .then(post => {
+      res.status(201).json(post);
+    })
 });
 
 // do not forget to export the router
