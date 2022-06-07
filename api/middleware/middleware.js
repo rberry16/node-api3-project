@@ -1,6 +1,8 @@
 function logger(req, res, next) {
-  // DO YOUR MAGIC
-  console.log('logger md');
+  const method = req.method;
+  const URL = req.originalUrl;
+  const timeStamp = Date.now();
+  console.log(`method: ${method}, URL: ${URL}, timestamp: ${timeStamp}`);
   next();
 }
 

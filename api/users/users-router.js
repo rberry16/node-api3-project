@@ -8,7 +8,7 @@ const router = express.Router();
 
 router.get('/', md.logger, (req, res) => {
   // RETURN AN ARRAY WITH ALL THE USERS
-  console.log('cool')
+  res.json('test');
 });
 
 router.get('/:id', (req, res) => {
