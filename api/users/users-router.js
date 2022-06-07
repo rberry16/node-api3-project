@@ -1,6 +1,7 @@
 const express = require('express');
 const md = require('../middleware/middleware');
 const Users = require('./users-model');
+const Posts = require('../posts/posts-model');
 
 // You will need `users-model.js` and `posts-model.js` both
 // The middleware functions also need to be required
@@ -22,14 +23,24 @@ router.get('/', md.logger, (req, res) => {
     });
 });
 
-router.get('/:id', (req, res) => {
-  // RETURN THE USER OBJECT
-  // this needs a middleware to verify user id
+router.get('/:id', md.logger, md.validateUserId, (req, res) => {
+  res.json(req.user);
 });
 
-router.post('/', (req, res) => {
+router.post('/', md.validateUser, (req, res) => {
   // RETURN THE NEWLY CREATED USER OBJECT
   // this needs a middleware to check that the request body is valid
+  Users.insert(req.body)
+    .then(user => {
+      res.status(201).json(user);
+    })
+    .catch(err => {
+      res.status(500).json({
+        message: 'error creating new user',
+        err: err.message,
+        stack: err.stack,
+      });
+    });
 });
 
 router.put('/:id', (req, res) => {
@@ -52,6 +63,17 @@ router.post('/:id/posts', (req, res) => {
   // RETURN THE NEWLY CREATED USER POST
   // this needs a middleware to verify user id
   // and another middleware to check that the request body is valid
+  Posts.insert(req.body)
+    .then(post => {
+      res.status(201).json(post);
+    })
+    .catch(err => {
+      res.status(500).json({
+        message: 'error creating new post',
+        err: err.message,
+        stack: err.stack,
+      });
+    });
 });
 
 // do not forget to export the router
